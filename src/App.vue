@@ -1,5 +1,11 @@
 <script setup>
+import Navigation from './components/Navigation.vue';
+
 </script>
 
-<template></template>
+<template>
+  <div class="container">
+    <Navigation />
+  </div>
+</template>
 
