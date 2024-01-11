@@ -2,6 +2,11 @@
 import { ref, reactive } from "vue";
 import vueFilePond from "vue-filepond";
 
+import db from "@/firebase"
+import { doc, setDoc } from "firebase/firestore"
+
+import { v4 as uuidv4 } from 'uuid';
+
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 
@@ -40,7 +45,7 @@ const serverOption = reactive({
             return response.json();
         })
             .then(data => {
-                console.log(data)
+                product.images.push({ title: data.data.title, url: data.data.url })
                 load(data.data.delete_url)
             })
             .catch(error => {
@@ -67,67 +72,118 @@ function handleFilePondInit() {
     console.log("filepond init")
     console.log(pond.value.getFiles())
 }
+
+const product = reactive({
+    name: '',
+    type: '',
+    description: '',
+    unit: '',
+    unitType: '',
+    expired: null,
+    location: '',
+    normalPrice: 0,
+    sellingPrice: 0,
+    images: []
+})
+
+const productTypes = ref([
+    'Makanan Berat',
+    'Snack',
+    'Minuman',
+    'Sayuran',
+    'Buah',
+])
+
+const unitTypes = ref([
+    'Kilogram',
+    'Pcs',
+    'Kardus'
+])
+
+const locations = ref([
+    {
+        id: 1,
+        location: 'Lokasi A'
+    },
+    {
+        id: 2,
+        location: 'Lokasi B'
+    },
+    {
+        id: 3,
+        location: 'Lokasi C'
+    },
+    {
+        id: 4,
+        location: 'Lokasi D'
+    },
+    {
+        id: 5,
+        location: 'Lokasi E'
+    },
+])
+
+async function requestProduct() {
+    try {
+        createdProduct = await setDoc(doc(db, 'products', uuidv4()), product)
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 </script>
 
 <template>
     <div class="card mt-3 mb-5">
         <div class="card-body">
             <h4 class="card-title mb-3">Request Produk</h4>
-            <form>
+            <form @submit.prevent="requestProduct">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="name" class="form-label">Nama Produk</label>
-                        <input type="text" class="form-control" id="name" name="name">
+                        <input type="text" class="form-control" id="name" name="name" v-model="product.name">
                     </div>
                     <div class="col-md-6">
                         <label for="type" class="form-label">Jenis</label>
-                        <select class="form-control" name="type" id="type">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
+                        <select v-model="product.type" class="form-control" name="type" id="type">
+                            <option v-for="pt in productTypes" :value="pt">{{ pt }}</option>
                         </select>
                     </div>
                     <div class="col-md-12">
                         <label for="description" class="form-label">Deskripsi</label>
-                        <textarea class="form-control" name="description" id="description"></textarea>
+                        <textarea class="form-control" v-model="product.description" name="description"
+                            id="description"></textarea>
                     </div>
                     <div class="col-md-4">
                         <label for="unit" class="form-label">Unit</label>
-                        <input type="number" min="1" class="form-control" id="unit" name="unit">
+                        <input type="number" v-model="product.unit" min="1" class="form-control" id="unit" name="unit">
                     </div>
                     <div class="col-md-4">
                         <label for="unitType" class="form-label">Satuan</label>
-                        <select class="form-control" name="unitType" id="unitType">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
+                        <select v-model="product.unitType" class="form-control" name="unitType" id="unitType">
+                            <option v-for="ut in unitTypes" :value="ut">{{ ut }}</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="expired" class="form-label">Expired</label>
-                        <input type="date" class="form-control" id="expired" name="expired">
+                        <input type="date" v-model="product.expired" class="form-control" id="expired" name="expired">
                     </div>
                     <div class="col-md-12">
                         <label for="location" class="form-label">Lokasi</label>
-                        <select class="form-control" name="location" id="location">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
+                        <select class="form-control" v-model="product.location" name="location" id="location">
+                            <option v-for="location in locations" :value="location.id">{{ location.location }}</option>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label for="normalPrice" class="form-label">Harga Normal</label>
-                        <input type="number" min="1" class="form-control" id="normalPrice" name="normalPrice">
+                        <input type="number" v-model="product.normalPrice" class="form-control" id="normalPrice"
+                            name="normalPrice">
                     </div>
                     <div class="col-md-6">
                         <label for="sellingPrice" class="form-label">Harga Jual</label>
-                        <input type="number" min="1" class="form-control" id="sellingPrice" name="sellingPrice">
+                        <input type="number" v-model="product.sellingPrice" class="form-control" id="sellingPrice"
+                            name="sellingPrice">
                     </div>
                     <div class="col-md-12">
                         <label for="images" class="form-label">Foto Produk</label>
