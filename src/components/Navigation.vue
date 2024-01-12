@@ -8,7 +8,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <router-link class="nav-link" to="/request">Request</router-link>
+                    <router-link class="nav-link" to="/requested-products">Requested Products</router-link>
                 </div>
             </div>
         </div>
