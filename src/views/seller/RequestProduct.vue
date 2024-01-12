@@ -2,10 +2,7 @@
 import { ref, reactive } from "vue";
 import vueFilePond from "vue-filepond";
 
-import db from "@/firebase"
-import { doc, setDoc } from "firebase/firestore"
-
-import { v4 as uuidv4 } from 'uuid';
+import { useProductStore } from "@/stores/product"
 
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
@@ -86,6 +83,8 @@ const product = reactive({
     images: []
 })
 
+const productStore = useProductStore()
+
 const productTypes = ref([
     'Makanan Berat',
     'Snack',
@@ -124,12 +123,7 @@ const locations = ref([
 ])
 
 async function requestProduct() {
-    try {
-        createdProduct = await setDoc(doc(db, 'products', uuidv4()), product)
-
-    } catch (error) {
-        console.log(error)
-    }
+    await productStore.requestProduct(product)
 }
 
 </script>

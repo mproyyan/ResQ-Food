@@ -3,7 +3,7 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCs5Ul3TEYIAj-DXJA9cG3O8PLAdXdUWfI",
+    apiKey: import.meta.env.VITE_FIREBASE_API,
     authDomain: "resq-food.firebaseapp.com",
     projectId: "resq-food",
     storageBucket: "resq-food.appspot.com",
