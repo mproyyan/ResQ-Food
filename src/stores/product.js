@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
 import db from "@/firebase"
 
 export const useProductStore = defineStore("product", {
@@ -13,9 +13,8 @@ export const useProductStore = defineStore("product", {
     actions: {
         async requestProduct(payload) {
             try {
-                console.log({ status: "Validasi", ...payload })
                 const docRef = await addDoc(collection(db, "products"), { status: "Validasi", ...payload })
-                console.log(docRef.id)
+                return docRef.id
             } catch (error) {
                 console.log(error)
                 return error
@@ -27,11 +26,27 @@ export const useProductStore = defineStore("product", {
                 this.products.splice(0, this.products.length)
                 const products = await getDocs(collection(db, "products"))
                 products.forEach((product) => {
-                    this.products.push(product.data())
+                    this.products.push({ id: product.id, ...product.data() })
                 })
 
                 return this.products
             } catch (error) {
+                return error
+            }
+        },
+
+        async getProduct(productId) {
+            try {
+                const docRef = doc(db, "products", productId)
+                const docSnap = await getDoc(docRef)
+
+                if (docSnap.exists()) {
+                    this.product = docSnap.data()
+                } else {
+                    console.log("No such document!");
+                }
+            } catch (error) {
+                console.log(error)
                 return error
             }
         }

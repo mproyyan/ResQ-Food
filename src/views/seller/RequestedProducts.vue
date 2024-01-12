@@ -16,7 +16,10 @@ onMounted(async () => {
         <div v-for="product in products" class="card col-lg-3 col-md-2 col-sm-1 w-25">
             <img :src="product.images[0].url" class="card-img-top" alt="...">
             <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
+                <h5 class="card-title">
+                    <router-link :to="{ name: 'RequestedProductDetail', params: { id: product.id } }" class="card-title">{{
+                        product.name }}</router-link>
+                </h5>
                 <span v-if="product.status === 'Validasi'" class="badge rounded-pill text-bg-info">{{ product.status
                 }}</span>
                 <span v-else-if="product.status === 'Diterima'" class="badge rounded-pill text-bg-success">{{ product.status

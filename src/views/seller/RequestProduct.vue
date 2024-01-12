@@ -3,6 +3,7 @@ import { ref, reactive } from "vue";
 import vueFilePond from "vue-filepond";
 
 import { useProductStore } from "@/stores/product"
+import { useRouter } from "vue-router"
 
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
@@ -18,6 +19,8 @@ const FilePond = vueFilePond(
 
 const images = ref([])
 const pond = ref(null)
+
+const router = useRouter()
 
 const serverOption = reactive({
     process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
@@ -123,7 +126,8 @@ const locations = ref([
 ])
 
 async function requestProduct() {
-    await productStore.requestProduct(product)
+    const productId = await productStore.requestProduct(product)
+    router.push({ name: "RequestedProductDetail", params: { id: productId } })
 }
 
 </script>
