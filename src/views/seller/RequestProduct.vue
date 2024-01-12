@@ -1,8 +1,9 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import vueFilePond from "vue-filepond";
 
 import { useProductStore } from "@/stores/product"
+import { useLocationStore } from "@/stores/location"
 import { useRouter } from "vue-router"
 
 import "filepond/dist/filepond.min.css";
@@ -87,6 +88,7 @@ const product = reactive({
 })
 
 const productStore = useProductStore()
+const locationStore = useLocationStore()
 
 const productTypes = ref([
     'Makanan Berat',
@@ -102,33 +104,16 @@ const unitTypes = ref([
     'Kardus'
 ])
 
-const locations = ref([
-    {
-        id: 1,
-        location: 'Lokasi A'
-    },
-    {
-        id: 2,
-        location: 'Lokasi B'
-    },
-    {
-        id: 3,
-        location: 'Lokasi C'
-    },
-    {
-        id: 4,
-        location: 'Lokasi D'
-    },
-    {
-        id: 5,
-        location: 'Lokasi E'
-    },
-])
-
 async function requestProduct() {
+    product.location = await locationStore.getLocation(product.location)
+    console.log(product.location)
     const productId = await productStore.requestProduct(product)
     router.push({ name: "RequestedProductDetail", params: { id: productId } })
 }
+
+onMounted(async () => {
+    await locationStore.getLocations()
+})
 
 </script>
 
@@ -170,7 +155,8 @@ async function requestProduct() {
                     <div class="col-md-12">
                         <label for="location" class="form-label">Lokasi</label>
                         <select class="form-control" v-model="product.location" name="location" id="location">
-                            <option v-for="location in locations" :value="location.id">{{ location.location }}</option>
+                            <option v-for="location in locationStore.locations" :value="location.id">{{ location.address }}
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-6">

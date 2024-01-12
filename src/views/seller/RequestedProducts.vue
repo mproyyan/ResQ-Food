@@ -14,7 +14,7 @@ onMounted(async () => {
     <router-link to="/request" class="btn btn-primary my-3">Request Produk</router-link>
     <div class="row row-gap-3 column-gap-3">
         <div v-for="product in products" class="card col-lg-3 col-md-2 col-sm-1 w-25">
-            <img :src="product.images[0].url" class="card-img-top" alt="...">
+            <img :src="product.images[0]?.url" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">
                     <router-link :to="{ name: 'RequestedProductDetail', params: { id: product.id } }" class="card-title">{{
